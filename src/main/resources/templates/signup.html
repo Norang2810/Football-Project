@@ -2,14 +2,16 @@
 <html>
 <head>
 <title>회원가입</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* 기존 스타일 유지 */
 body {
-	font-family: Arial, sans-serif;
+	font-family:'IBM Plex Sans KR', Arial, sans-serif;
 	background-image: url('/registerSon.jpg');
 	background-size: cover;
 	background-position: center;
 	display: flex;
+	font-weight: bold;
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
@@ -26,6 +28,7 @@ body {
 
 h2 {
 	text-align: center;
+	font-weight: bold;
 }
 
 input[type="text"], input[type="password"], input[type="email"] {
@@ -43,6 +46,7 @@ button {
 	color: white;
 	border: none;
 	border-radius: 5px;
+	font-weight: bold;
 	cursor: pointer;
 }
 
@@ -82,13 +86,13 @@ button:hover {
     <div th:if="${successMessage != null}" th:text="${successMessage}" class="success-message"></div>
 
     <form th:action="@{/register}" method="post">
-        <label for="username">아이디:</label>
+        <label for="username">아이디</label>
         <input type="text" id="username" name="username" th:value="${username}" required>
         
-        <label for="password">비밀번호:</label>
+        <label for="password">비밀번호</label>
         <input type="password" id="password" name="password" required>
         
-        <label for="email">이메일:</label>
+        <label for="email">이메일</label>
         <input type="email" id="email" name="email" th:value="${email}" required>
         
         <button type="submit">회원가입</button>

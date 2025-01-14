@@ -2,13 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>메인화면</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body {
-	font-family: Arial, sans-serif;
+	font-family:'IBM Plex Sans KR', Arial, sans-serif;
 	margin: 0;
 	padding: 0;
 	background-color: #f5f5f5;
-	display: flex;
+	display: flex; /* column 방향으로 쌓일 요소 중 하나로 광고배너 사용 가능 */
 	flex-direction: column;
 	height: 100vh;
 }
@@ -17,6 +18,7 @@ body {
 .navbar {
 	background-color: #333;
 	padding: 10px;
+	font-weight: bold;
 	display: flex;
 	justify-content: space-between; /* 로고는 왼쪽, 버튼들은 가운데 */
 	align-items: center;
@@ -28,6 +30,7 @@ body {
 	border: none; /* 테두리 제거 */
 	color: white;
 	font-size: 16px;
+	font-weight: bold;
 	cursor: pointer;
 	padding: 5px 10px; /* 버튼 크기 조정 */
 }
@@ -51,6 +54,7 @@ body {
 
 .nav-buttons {
 	display: flex;
+	font-weight: bold;
 	gap: 180px; /* 버튼 사이 간격 */
 	margin: 0 auto; /* 버튼들을 가운데로 정렬 */
 }
@@ -64,6 +68,7 @@ body {
 	display: grid;
 	grid-template-columns: 1fr 5fr; /* 사이드바 1: 콘텐츠 3 비율 */
 	gap: 20px;
+	font-weight: bold;
 	flex: 1;
 	padding: 10px;
 }
@@ -78,12 +83,14 @@ body {
 .sidebar {
 	background-color: #eee;
 	padding: 15px;
+	font-weight: bold;
 	border-right: 1px solid #ddd;
 	overflow-y: auto;
 }
 
 .sidebar h2 {
-	font-size: 18px;
+	font-size: 20px;
+	font-weight: bold;
 	margin-top: 0;
 }
 
@@ -92,6 +99,7 @@ body {
 	background-color: white;
 	padding: 20px;
 	border-radius: 5px;
+	font-weight: bold;
 	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
 	overflow-y: auto;
 	text-align: center;
@@ -136,6 +144,7 @@ td {
 	background-color: white;
 	border: 1px solid #ccc;
 	border-radius: 10px;
+	font-weight: bold;
 	z-index: 1000;
 	width: 300px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -159,6 +168,7 @@ td {
 	background-color: #4CAF50;
 	color: white;
 	border: none;
+	font-weight: bold;
 	border-radius: 5px;
 	cursor: pointer;
 }
@@ -186,6 +196,7 @@ td {
 	border: none; /* 테두리 제거 */
 	border-radius: 5px; /* 둥근 모서리 */
 	padding: 10px 20px; /* 여백 */
+	font-weight: bold;
 	font-size: 16px; /* 글자 크기 */
 	cursor: pointer; /* 마우스 포인터 변경 */
 	text-align: center; /* 텍스트 가운데 정렬 */
@@ -197,6 +208,7 @@ td {
 	background-color: #333; /* 버튼 배경색 */
 	color: white; /* 글자색 */
 	border: none; /* 테두리 제거 */
+	font-weight: bold;
 	border-radius: 5px; /* 둥근 모서리 */
 	padding: 5px 10px; /* 여백 */
 	font-size: 16px; /* 글자 크기 */

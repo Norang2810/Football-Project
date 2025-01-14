@@ -226,6 +226,10 @@
 <p>경기 상태: <span id="matchStatus" th:text="${match.status}">준비 중</span></p>
 
  <div class="chat-rules-button" onclick="openModal()">채팅 규정 보기</div>
+ <div>
+    <span>현재 사용 중인 사용자 수: </span>
+    <span id="userCount">0</span>
+</div>
  <div id="chatRulesModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">채팅 규정</div>
@@ -255,87 +259,104 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
-    let username = null;
+let username = null;
 
-    // 서버에서 현재 사용자 이름 가져오기
-    fetch('/api/current-username')
-        .then(response => response.text())
-        .then(data => {
-            username = data;
-        });
+//서버에서 현재 사용자 이름 가져오기
+fetch('/api/current-username')
+ .then(response => response.text())
+ .then(data => {
+     username = data;
+ });
+ 
+function getMatchIdFromUrl() {
+    const path = window.location.pathname; // 예: /matches/details/497615
+    const segments = path.split('/'); // '/'를 기준으로 경로 분리
+    return segments[segments.length - 1]; // 마지막 부분이 match.id
+}
 
-    const matchId = /*[[${match.id}]]*/ 0; // 서버에서 제공하는 match ID
-    const socket = new SockJS('/chat-websocket');
-    const stompClient = Stomp.over(socket);
+const matchId = getMatchIdFromUrl();
 
-    // WebSocket 연결
-    stompClient.connect({}, function () {
-        console.log("WebSocket 연결 성공");
+const socket = new SockJS('/chat-websocket');
+const stompClient = Stomp.over(socket);
 
-     // 실시간 스코어 데이터 구독
-        stompClient.subscribe('/topic/live-scores', function (message) {
-            const matches = JSON.parse(message.body);
-            const currentMatch = matches.find(match => match.id === matchId);
-            if (currentMatch) {
-                updateMatchDetails(currentMatch);
-            }
-        });
+//WebSocket 연결
+stompClient.connect({}, function () {
+ console.log("WebSocket 연결 성공");
 
-        // 채팅 메시지 구독
-        stompClient.subscribe('/topic/messages', function (message) {
-            const messageDiv = document.createElement("div");
-            messageDiv.textContent = message.body; // 서버에서 받은 메시지 출력
-            document.getElementById("messages").appendChild(messageDiv);
-        });
-    });
+ // 특정 경기의 채팅 채널 구독
+ stompClient.subscribe(`/topic/messages/${matchId}`, function (message) {
+     const messageDiv = document.createElement("div");
+     messageDiv.textContent = message.body; // 서버에서 받은 메시지 출력
+     document.getElementById("messages").appendChild(messageDiv);
+ });
 
- // 실시간 스코어 및 상태 갱신
-    function updateMatchDetails(match) {
-        document.getElementById('homeScore').textContent = match.homeScore || 0;
-        document.getElementById('awayScore').textContent = match.awayScore || 0;
-        document.getElementById('matchStatus').textContent = match.status || "Unknown";
-    }
+ // 기존 채팅 기록 로드
+ loadChatLogs();
+});
+
+//기존 채팅 기록 로드
+async function loadChatLogs() {
+ try {
+     const response = await fetch(`/api/chat/logs/${matchId}`);
+     const logs = await response.json();
+
+     const messagesDiv = document.getElementById("messages");
+     messagesDiv.innerHTML = ""; // 기존 메시지 초기화
+
+     logs.forEach(log => {
+         const messageDiv = document.createElement("div");
+         messageDiv.textContent = `${log.user}: ${log.content}`;
+         messagesDiv.appendChild(messageDiv);
+     });
+ } catch (error) {
+     console.error("채팅 기록 로드 중 오류 발생:", error);
+ }
+}
+
+//채팅 메시지 전송
+function sendMessage() {
+ const chatInput = document.getElementById("chatInput");
+ const message = chatInput.value.trim();
+
+ if (message === "") {
+     alert("메시지를 입력하세요.");
+     return;
+ }
+
+ if (username === null) {
+     alert("사용자 이름을 불러오지 못했습니다. 다시 시도해주세요.");
+     return;
+ }
+
+ // 사용자 이름, 메시지, 경기 ID를 함께 전송
+ stompClient.send(`/app/sendMessage/${matchId}`, {}, JSON.stringify({
+     matchId: matchId, // 현재 경기의 matchId
+     user: username,
+     content: message
+ }));
+
+ chatInput.value = ""; // 입력창 초기화
+}
+
+//Enter 키로 메시지 전송
+document.getElementById("chatInput").addEventListener("keydown", function (event) {
+ if (event.key === "Enter") {
+     sendMessage(); // 메시지 전송 함수 호출
+     event.preventDefault(); // Enter 키의 기본 동작(줄바꿈)을 방지
+ }
+});
+
+//모달 열기
+function openModal() {
+ document.getElementById("chatRulesModal").style.display = "flex";
+}
+
+//모달 닫기
+function closeModal() {
+ document.getElementById("chatRulesModal").style.display = "none";
+}
 
 
-    // 채팅 메시지 전송
-    function sendMessage() {
-        const chatInput = document.getElementById("chatInput");
-        const message = chatInput.value.trim();
-
-        if (message === "") {
-            alert("메시지를 입력하세요.");
-            return;
-        }
-
-        if (username === null) {
-            alert("사용자 이름을 불러오지 못했습니다. 다시 시도해주세요.");
-            return;
-        }
-
-        // 사용자 이름과 메시지를 함께 전송
-        stompClient.send("/app/sendMessage", {}, JSON.stringify({
-            user: username,
-            content: message
-        }));
-
-        chatInput.value = ""; // 입력창 초기화
-    }
-    
-    document.getElementById("chatInput").addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            sendMessage(); // 메시지 전송 함수 호출
-            event.preventDefault(); // Enter 키의 기본 동작(줄바꿈)을 방지
-        }
-    });
-    
-    function openModal() {
-        document.getElementById("chatRulesModal").style.display = "flex";
-    }
-
-    // 모달 닫기
-    function closeModal() {
-        document.getElementById("chatRulesModal").style.display = "none";
-    }
 </script>
 
 

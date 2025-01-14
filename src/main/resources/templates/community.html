@@ -1,214 +1,217 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>커뮤니티</title>
-<style>
-body {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 0;
-	background-color: #f5f5f5;
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-}
+    <title>커뮤니티</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-/* 상단 네비게이션 바 */
+        /* 상단 네비게이션 바 */
+        
 .navbar {
-	background-color: #333;
-	padding: 10px;
-	display: flex;
-	justify-content: space-between; /* 로고는 왼쪽, 버튼들은 가운데 */
-	align-items: center;
-	color: white;
+    background-color: #333;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between; /* 로고는 왼쪽, 버튼들은 가운데 */
+    align-items: center;
+    color: white;
 }
-
 .nav-buttons button {
-	background-color: transparent; /* 버튼 배경 제거 */
-	border: none; /* 테두리 제거 */
-	color: white;
-	font-size: 16px;
-	cursor: pointer;
-	padding: 5px 10px; /* 버튼 크기 조정 */
+    background-color: transparent; /* 버튼 배경 제거 */
+    border: none; /* 테두리 제거 */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px; /* 버튼 크기 조정 */
 }
-
 .navbar .logo {
-	display: flex;
-	align-items: center;
-	gap: 10px; /* 로고 이미지와 텍스트 간 간격 */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 로고 이미지와 텍스트 간 간격 */
 }
 
 .logo-img {
-	width: 40px;
-	height: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 .logo-text {
-	font-size: 18px;
-	font-weight: bold;
-	color: white;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
 }
 
 .nav-buttons {
-	display: flex;
-	gap: 180px; /* 버튼 사이 간격 */
-	margin: 0 auto; /* 버튼들을 가운데로 정렬 */
+    display: flex;
+    gap: 180px; /* 버튼 사이 간격 */
+    margin: 0 auto; /* 버튼들을 가운데로 정렬 */
 }
 
 .nav-buttons button:hover {
 	text-decoration: underline;
 }
 
-/* 레이아웃 컨테이너 */
-.container {
-	display: grid;
-	grid-template-columns: 1fr 5fr; /* 사이드바 1: 콘텐츠 3 비율 */
-	gap: 20px;
-	flex: 1;
-	padding: 10px;
-}
+        /* 레이아웃 컨테이너 */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 5fr; /* 사이드바 1: 콘텐츠 3 비율 */
+            gap: 20px;
+            flex: 1;
+            padding: 10px;
+        }
 
-@media ( max-width : 768px) {
-	.container {
-		grid-template-columns: 1fr; /* 작은 화면에서는 한 열 */
-	}
-}
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr; /* 작은 화면에서는 한 열 */
+            }
+        }
 
-/* 사이드바 */
-.sidebar {
-	background-color: #eee;
-	padding: 15px;
-	border-right: 1px solid #ddd;
-	overflow-y: auto;
-}
+        /* 사이드바 */
+        .sidebar {
+            background-color: #eee;
+            padding: 15px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
 
-.sidebar h2 {
-	font-size: 18px;
-	margin-top: 0;
-}
+        .sidebar h2 {
+            font-size: 18px;
+            margin-top: 0;
+        }
 
-table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 20px 0;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
 
-table, th, td {
-	border: 1px solid #ddd;
-	padding: 8px;
-}
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
 
-th {
-	background-color: #333;
-	color: white;
-	text-align: left;
-}
+        th {
+            background-color: #333;
+            color: white;
+            text-align: left;
+        }
 
-td {
-	text-align: left;
-}
+        td {
+            text-align: left;
+        }
 
-/* 콘텐츠 영역 */
-.content {
-	background-color: white;
-	padding: 20px;
-	border-radius: 5px;
-	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-	overflow-y: auto;
-}
+        /* 콘텐츠 영역 */
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
 
-.content h1 {
-	margin-top: 0;
-	text-align: center;
-	padding: 20px;
-}
+        .content h1 {
+            margin-top: 0;
+            text-align: center;
+            padding: 20px;
+        }
 
-/* 반응형: 화면 크기 축소 시 테이블 스크롤 */
-.table-container {
-	overflow-x: auto;
-}
-
-/* 공통 버튼 스타일 */
+        /* 반응형: 화면 크기 축소 시 테이블 스크롤 */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        /* 공통 버튼 스타일 */
 .common-button {
-	background-color: #333; /* 버튼 배경색 */
-	color: white; /* 글자색 */
-	border: none; /* 테두리 제거 */
-	border-radius: 5px; /* 둥근 모서리 */
-	padding: 10px 20px; /* 여백 */
-	font-size: 16px; /* 글자 크기 */
-	cursor: pointer; /* 마우스 포인터 변경 */
-	text-align: center; /* 텍스트 가운데 정렬 */
-	transition: background-color 0.3s; /* 호버 애니메이션 */
-	margin-bottom: 20px; /* 버튼 아래 간격 추가 */
+    background-color: #333; /* 버튼 배경색 */
+    color: white; /* 글자색 */
+    border: none; /* 테두리 제거 */
+    border-radius: 5px; /* 둥근 모서리 */
+    padding: 10px 20px; /* 여백 */
+    font-size: 16px; /* 글자 크기 */
+    cursor: pointer; /* 마우스 포인터 변경 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    transition: background-color 0.3s; /* 호버 애니메이션 */
+    margin-bottom: 20px; /* 버튼 아래 간격 추가 */
 }
 
-/* 페이징 관련 css */
+	/* 페이징 관련 css */
+
 .pagination {
-	display: flex;
-	justify-content: center;
-	margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .pagination a {
-	margin: 0 5px;
-	padding: 8px 12px;
-	text-decoration: none;
-	background-color: #333;
-	color: white;
-	border-radius: 5px;
-	font-size: 14px;
+    margin: 0 5px;
+    padding: 8px 12px;
+    text-decoration: none;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 .pagination a.active {
-	background-color: #007bff;
-	color: white;
+    background-color: #007bff;
+    color: white;
 }
 
 .pagination a:hover {
-	background-color: #555;
-	color: white;
+    background-color: #555;
+    color: white;
 }
+
 
 /* 광고배너 */
 /* 배너를 감싸는 컨테이너 */
 .banner-container {
-	width: 1500px; /* 광고 배너 너비 */
-	height: 100px; /* 광고 배너 높이 */
-	margin: 20px auto; /* 위아래 여백 + 가로 중앙 정렬 */
-	overflow: hidden; /* 슬라이드가 넘어가는 부분 숨김 */
-	position: relative; /* 애니메이션 위치 제어 가능 */
-	border: 2px solid #999;
-	background-color: #fff;
-	box-sizing: border-box;
-	display: flex; /* 두 슬라이드를 가로로 나란히 배치 */
+  width: 1500px;          /* 광고 배너 너비 */
+  height: 100px;         /* 광고 배너 높이 */
+  margin: 20px auto;     /* 위아래 여백 + 가로 중앙 정렬 */
+  overflow: hidden;      /* 슬라이드가 넘어가는 부분 숨김 */
+  position: relative;    /* 애니메이션 위치 제어 가능 */
+  border: 2px solid #999;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: flex;         /* 두 슬라이드를 가로로 나란히 배치 */
 }
 
 /* 실제 슬라이드(이미지 묶음) */
 .banner-slide {
-	display: flex;
-	flex-shrink: 0; /* 폭이 줄어들지 않도록 고정 */
-	animation: slide-left 35s linear infinite; /* 좌측으로 이동하는 애니메이션 */
+  display: flex;
+  flex-shrink: 0;               /* 폭이 줄어들지 않도록 고정 */
+  animation: slide-left 35s linear infinite; /* 좌측으로 이동하는 애니메이션 */
 }
 
 /* 배너 이미지 스타일 */
 .banner-slide img {
-	width: 300px; /* 각각의 배너 가로폭 */
-	height: 150px; /* 각각의 배너 높이 */
-	object-fit: cover;
+  width: 300px;  /* 각각의 배너 가로폭 */
+  height: 150px; /* 각각의 배너 높이 */
+  object-fit: cover;
 }
 
 /* 무한 롤링 애니메이션 */
 @keyframes slide-left {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-1200px);
-    }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* 예: 4개 * 300px = 1200px 만큼 왼쪽으로 이동 */
+    transform: translateX(-1200px);
+  }
 }
-
 /* ----- 배너 관련 스타일 끝 ----- */
-</style>
+
+    </style>
 </head>
 <body>
 	<!-- 상단 네비게이션 바 -->
