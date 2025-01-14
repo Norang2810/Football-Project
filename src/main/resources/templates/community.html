@@ -292,7 +292,6 @@
 						<thead>
 							<tr>
 								<th>제목</th>
-								<th>첨부파일</th>
 								<th>작성자</th>
 								<th>조회수</th>
 								<th>작성일</th>
@@ -310,9 +309,6 @@
 										<a th:href="@{/community/{id}(id=${post.id})}"
 											th:text="${post.title}"> 제목 </a>
 									</div>
-								</td>
-								<td>
-   								<a th:if="${post.attachmentPath != null}"  th:href="@{${post.attachmentPath}}" download> 다운로드</a>
 								</td>
 								<td th:text="${post.author}">작성자</td>
 								<td th:text="${post.views}">조회수</td>

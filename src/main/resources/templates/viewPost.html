@@ -221,8 +221,15 @@ h1 {
 			<span><strong>작성자:</strong> <span th:text="${post.author}">작성자</span></span>
 			<span><strong>조회수:</strong> <span th:text="${post.views}">조회수</span></span>
 			<span><strong>작성일:</strong> <span
-				th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span></span>
+				th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span>
+			</span>
+
+			<!-- 첨부파일이 있을 경우 다운로드 링크 표시 -->
+			<span th:if="${post.attachmentPath != null}"> <strong>첨부파일:</strong>
+				<a th:href="@{${post.attachmentPath}}" download>다운로드</a>
+			</span>
 		</div>
+
 
 		<!-- 이미지 섹션 -->
 		<div class="image-wrapper" th:if="${post.imagePath != null}">
