@@ -13,7 +13,6 @@ body {
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
-	
 }
 
 /* 메인 컨텐츠 */
@@ -55,6 +54,19 @@ h1 {
 	font-size: 16px;
 	color: #444;
 	line-height: 1.6;
+}
+
+/* 이미지 섹션 */
+.image-wrapper {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.image-wrapper img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* 답글 섹션 */
@@ -205,6 +217,14 @@ h1 {
 			<span><strong>작성일:</strong> <span
 				th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span></span>
 		</div>
+
+		<!-- 이미지 섹션 -->
+		<div class="image-wrapper" th:if="${post.imagePath != null}">
+			<img
+				th:src="@{/uploads/images/} + ${post.imagePath.split('/images/')[1]}"
+				alt="첨부 이미지">
+		</div>
+
 
 		<!-- 내용 -->
 		<div class="content-wrapper">

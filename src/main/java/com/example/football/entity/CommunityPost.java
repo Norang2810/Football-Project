@@ -21,7 +21,9 @@ public class CommunityPost {
     private int views = 0; // 기본값 0으로 설정
     private LocalDateTime createdAt = LocalDateTime.now();
     
-    
+    // 파일 경로 필드 추가(이미지,첨부파일)
+    private String imagePath;
+    private String attachmentPath;
 
     // Getters and Setters
     public Long getId() {
@@ -71,4 +73,22 @@ public class CommunityPost {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+    
+    // 이미지,첨부파일 관련 코드
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getAttachmentPath() {
+        return attachmentPath;
+    }
+
+    public void setAttachmentPath(String attachmentPath) {
+        this.attachmentPath = attachmentPath;
+    }
+    
 }
