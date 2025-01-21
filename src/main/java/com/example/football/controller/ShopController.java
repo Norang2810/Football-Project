@@ -92,7 +92,7 @@ public class ShopController {
 
         // 훈장 조회
         Badge badge = badgeRepository.findById(badgeId)
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 훈장 ID입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 뱃지 ID입니다."));
 
         if (loggedInUser.getPoints() >= badge.getPrice()) {
             // 포인트 차감
@@ -102,7 +102,7 @@ public class ShopController {
             loggedInUser.setBadge(badge); 
             userRepository.save(loggedInUser);
 
-            model.addAttribute("message", badge.getName() + " 훈장을 성공적으로 구매했습니다!");
+            model.addAttribute("message", badge.getName() + " 뱃지를 성공적으로 구매했습니다!");
         } else {
             model.addAttribute("message", "포인트가 부족합니다.");
         }

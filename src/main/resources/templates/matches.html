@@ -224,6 +224,83 @@ td {
   }
 }
 /* ----- 배너 관련 스타일 끝 ----- */
+.card-container {
+    display: grid; /* 그리드 레이아웃 사용 */
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 두 개의 카드 */
+    gap: 30px; /* 카드 간 간격 */
+    justify-content: center; /* 카드가 가운데로 정렬 */
+    padding: 20px; /* 전체 여백 */
+}
+
+.match-card {
+    background-color: #fff;
+    border-radius: 15px; /* 카드 모서리 둥글게 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 부드러운 그림자 */
+    padding: 20px; /* 카드 내부 여백 */
+    width: 95%; /* 그리드 셀에 맞춤 */
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px; /* 카드 내부 요소 간 간격 */
+}
+
+.match-card:hover {
+    transform: translateY(-5px); /* 마우스 호버 시 카드 상승 효과 */
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* 팀 정보 */
+.team-info {
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝 정렬 */
+    align-items: center; /* 세로 정렬 */
+    gap: 15px;
+}
+
+.team {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    align-items: center; /* 가운데 정렬 */
+    gap: 8px;
+}
+
+.team img {
+    width: 60px; /* 로고 크기 증가 */
+    height: 60px;
+    border-radius: 50%; /* 원형 로고 */
+    border: 2px solid #ddd; /* 테두리 */
+}
+
+.vs {
+    font-size: 18px;
+    font-weight: bold;
+    color: #555; /* 중립적인 색상 */
+}
+
+/* 경기 시간 */
+.match-time {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333; /* 강조 색상 */
+    margin-top: 10px;
+}
+.team-label {
+    font-size: 12px; /* 레이블 폰트 크기 */
+    font-weight: bold; /* 굵은 글씨 */
+    color: #555; /* 중립적인 색상 */
+    margin-top: 5px; /* 로고와 레이블 간의 간격 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .card-container {
+        grid-template-columns: 1fr; /* 작은 화면에서는 한 줄에 한 개 */
+    }
+}
+
 </style>
 <script>
         // 페이지 로드 시 성공 메시지를 팝업으로 표시
@@ -302,38 +379,29 @@ td {
 					<img src="/ad3.jpg" alt="배너3"> <img src="/ad5.jpg" alt="배너4">
 				</div>
 			</div>
-			<h1>경기목록</h1>
-			<div class="table-container">
-				<table class="match-table">
-					<thead>
-						<tr>
-							<th>홈팀</th>
-							<th>원정팀</th>
-							<th>경기시작시간</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="match : ${matches}"
-							th:onclick="'window.open(\'/matches/details/' + ${match.id} + '\', \'_blank\')'">
-							<td>
-								<div class="team-info">
-									<img th:src="${match.homeTeamCrest}" alt="홈팀 로고"> <span
-										th:text="${match.homeTeamKoreanName}"></span>
-								</div>
-							</td>
-							<td>
-								<div class="team-info">
-									<img th:src="${match.awayTeamCrest}" alt="원정팀 로고"> <span
-										th:text="${match.awayTeamKoreanName}"></span>
-								</div>
-							</td>
-							<td th:text="${match.kstDate}" style="text-align: left;"></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>			
-		</div>
-	</div>
+			
+			<h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333;">⚽ 경기목록</h1>
+			<div class="card-container">
+    		<div class="match-card" th:each="match : ${matches}" th:onclick="'window.open(\'/matches/details/' + ${match.id} + '\', \'_blank\')'">
+       		<div class="team-info">
+            <div class="team">
+                <img th:src="${match.homeTeamCrest}" alt="홈팀 로고">
+                <span th:text="${match.homeTeamKoreanName}"></span>
+                <span class="team-label">홈</span>
+            </div>
+            <span class="vs">VS</span>
+            <div class="team">
+                <img th:src="${match.awayTeamCrest}" alt="원정팀 로고">
+                <span th:text="${match.awayTeamKoreanName}"></span>
+                <span class="team-label">원정</span>
+            </div>
+        </div>
+        <div class="match-time">
+            <span th:text="${match.kstDate}"></span>
+        </div>
+    </div>
+</div>
+
 	<!-- Chatbot UI -->
 <div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
     <div id="chatbot-window" style="display: none; width: 500px; height: 570px; background: white; border: 1px solid #ccc; box-shadow: 0px 4px 8px rgba(0,0,0,0.2); border-radius: 8px;">

@@ -5,16 +5,32 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+
 @Entity
 public class Badge {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 직접 관리할 ID
 
     private String name; // 훈장 이름
     private String description; // 훈장 설명
     private int price; // 훈장 가격
     private String imageUrl; // 훈장 이미지 경로
+
+    // 기본 생성자
+    public Badge() {}
+
+    // 모든 필드 생성자
+    public Badge(Long id, String description, String imageUrl, String name, int price) {
+        this.id = id;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.name = name;
+        this.price = price;
+    }
+
+    // Getters and Setters
+    // ...
+
 
     // Getters and Setters
     public Long getId() {

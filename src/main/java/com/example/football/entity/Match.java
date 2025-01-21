@@ -190,7 +190,7 @@ public class Match {
     public String getKstDate() {
         LocalDateTime utcDateTime = LocalDateTime.parse(utcDate, DateTimeFormatter.ISO_DATE_TIME);
         LocalDateTime kstDateTime = utcDateTime.plusHours(9);
-        return kstDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        return kstDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"));
     }
 
     @Override
