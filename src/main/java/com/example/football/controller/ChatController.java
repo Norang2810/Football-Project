@@ -5,6 +5,7 @@ import com.example.football.entity.ChatLog;
 import com.example.football.entity.User;
 import com.example.football.repository.UserRepository;
 import com.example.football.service.ChatLogService;
+import com.example.football.WebSocketEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -26,6 +27,13 @@ public class ChatController {
     @Autowired
     private UserRepository userRepository;
     
+    private final WebSocketEventListener webSocketEventListener;
+
+    @Autowired
+    public ChatController(WebSocketEventListener webSocketEventListener) {
+        this.webSocketEventListener = webSocketEventListener;
+    }
+
     // 비속어 리스트
     private static final List<String> BANNED_WORDS = Arrays.asList(
     	    "10새", "10새기", "10새리", "10세리", "10쉐이", "10쉑", "10스", "10쌔",
@@ -140,27 +148,51 @@ public class ChatController {
     @MessageMapping("/sendMessage/{matchId}")
     @SendTo("/topic/messages/{matchId}")
     public ChatMessage handleMessage(@DestinationVariable Long matchId, ChatMessage chatMessage) {
-        // 비속어 필터링
-        String filteredContent = filterProfanity(chatMessage.getContent());
-        chatMessage.setContent(filteredContent);
+        try {
+            System.out.println("Received message: " + chatMessage.getContent() + " from user: " + chatMessage.getUser() + " for match: " + matchId);
+            
+            // matchId 설정
+            chatMessage.setMatchId(matchId);
+            
+            // 비속어 필터링
+            String filteredContent = filterProfanity(chatMessage.getContent());
+            chatMessage.setContent(filteredContent);
 
-        // 사용자 닉네임으로 DB에서 User 정보 조회
-        User user = userRepository.findUserWithBadgeByNickname(chatMessage.getUser())
-                .orElseThrow(() -> new RuntimeException("User not found: " + chatMessage.getUser()));
+            // 사용자 닉네임으로 DB에서 User 정보 조회
+            try {
+                userRepository.findUserWithBadgeByNickname(chatMessage.getUser())
+                        .ifPresentOrElse(user -> {
+                            // Badge 데이터 설정
+                            if (user.getBadge() != null) {
+                                chatMessage.setBadge(user.getBadge().getName());
+                                System.out.println("User badge: " + user.getBadge().getName());
+                            } else {
+                                System.out.println("No badge found for user: " + user.getNickname());
+                            }
+                            // 채팅 로그 저장
+                            chatLogService.saveChatLog(matchId, user, filteredContent);
+                        }, () -> {
+                            System.out.println("User not found: " + chatMessage.getUser());
+                            chatMessage.setBadge(""); // 빈 배지 설정
+                        });
+            } catch (Exception e) {
+                System.err.println("Error finding user: " + e.getMessage());
+                // 사용자 정보 조회 실패해도 메시지는 전송
+            }
 
-        // Badge 데이터 설정
-        if (user.getBadge() != null) {
-            chatMessage.setBadge(user.getBadge().getName()); // Badge 이름 설정
-            System.out.println("User badge: " + user.getBadge().getName()); // 디버깅 로그
-        } else {
-            System.out.println("No badge found for user: " + user.getNickname());
+            System.out.println("Sending message back to client: " + chatMessage.getContent());
+            return chatMessage;
+            
+        } catch (Exception e) {
+            System.err.println("Error processing chat message: " + e.getMessage());
+            e.printStackTrace();
+            // 에러가 발생해도 기본 메시지는 전송
+            ChatMessage errorMessage = new ChatMessage();
+            errorMessage.setMatchId(matchId);
+            errorMessage.setUser(chatMessage.getUser());
+            errorMessage.setContent(chatMessage.getContent());
+            return errorMessage;
         }
-
-     // 채팅 로그 저장 (User 객체 전달)
-        chatLogService.saveChatLog(matchId, user, filteredContent);
-
-        // 클라이언트로 메시지와 Badge 정보 반환
-        return chatMessage;
     }
 
 
@@ -169,6 +201,14 @@ public class ChatController {
     @ResponseBody
     public List<ChatLogDTO> getChatLogs(@PathVariable Long matchId) {
         return chatLogService.getChatLogs(matchId);
+    }
+
+    @MessageMapping("/request-user-count")
+    @SendTo("/topic/user-count")
+    public int handleUserCountRequest() {
+        int currentCount = webSocketEventListener.getCurrentUserCount();
+        System.out.println("User count requested: " + currentCount);
+        return currentCount;
     }
 
 }

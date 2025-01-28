@@ -27,10 +27,7 @@
         <p>경기 상태: <span id="matchStatus" th:text="${match.status}">준비 중</span></p>
 
         <div class="chat-rules-button" onclick="openModal()">채팅 규정 보기</div>
-        <div>
-            <span>현재 사용 중인 사용자 수: </span>
-            <span id="userCount">0</span>
-        </div>
+        
         <div id="chatRulesModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">채팅 규정</div>
@@ -47,19 +44,11 @@
     </div>
 
     <div class="chat-container">
-        <div class="messages" id="messages">
-            <!-- 메시지가 표시될 영역 (Thymeleaf 단에서 초기 채팅 로그를 렌더링할 수도 있지만, JS로 불러오기 때문에 비워둘 수 있습니다.) -->
-            <div th:each="log : ${chatLogs}" class="chat-message">
-                <div class="badge-wrapper">
-                    <span class="dynamic-badge"
-                          th:classappend="' ' + ${log.badge.toLowerCase()} + '-badge'"
-                          th:text="${log.badge}">
-                    </span>
-                    <strong th:text="${log.user}">닉네임</strong>
-                </div>
-                <p th:text="${log.content}">메시지 내용</p>
-            </div>
+        <div class="chat-header">
+            <h3>실시간 채팅</h3>
+            <div class="user-count">현재 접속자 수: <span id="userCount">0</span>명</div>
         </div>
+        <div id="messages" class="messages"></div>
         <div class="message-input">
             <input type="text" id="chatInput" placeholder="메시지를 입력하세요...">
             <button onclick="sendMessage()">전송</button>
@@ -70,6 +59,22 @@
 <!-- SockJS / STOMP 라이브러리 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<style>
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.user-count {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+</style>
 
 <script>
     let nickname = null;
@@ -87,21 +92,68 @@
     // SockJS & STOMP 설정
     const socket = new SockJS('/chat-websocket');
     const stompClient = Stomp.over(socket);
+    
+    // 디버그 로그 비활성화
+    stompClient.debug = null;
 
-    // WebSocket 연결
-    stompClient.connect({}, function () {
-        console.log("WebSocket 연결 성공");
+    // 재연결 시도 함수
+    function connectWebSocket() {
+        stompClient.connect({}, 
+            function (frame) {
+                console.log("WebSocket 연결 성공");
+                
+                // 특정 경기의 채팅 채널 구독
+                stompClient.subscribe(`/topic/messages/${matchId}`, function (message) {
+                    try {
+                        const data = JSON.parse(message.body); 
+                        console.log("Received message data:", data); 
+                        
+                        // 메시지 표시
+                        const messageDiv = createChatMessage(data);
+                        const messagesDiv = document.getElementById("messages");
+                        messagesDiv.appendChild(messageDiv);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    } catch (error) {
+                        console.error("Error processing received message:", error);
+                    }
+                });
 
-        // 특정 경기의 채팅 채널 구독
-        stompClient.subscribe(`/topic/messages/${matchId}`, function (message) {
-            const data = JSON.parse(message.body); 
-            console.log("Received message data:", data); 
-            const messageDiv = createChatMessage(data); 
-            document.getElementById("messages").appendChild(messageDiv); 
-        });
+                // 사용자 수 구독
+                stompClient.subscribe('/topic/user-count', function(message) {
+                    try {
+                        const userCount = JSON.parse(message.body);
+                        const userCountElement = document.getElementById('userCount');
+                        if (userCountElement) {
+                            userCountElement.textContent = userCount;
+                            console.log("User count updated:", userCount);
+                        }
+                    } catch (error) {
+                        console.error("Error updating user count:", error);
+                    }
+                });
 
-        // 기존 채팅 기록 로드
-        loadChatLogs();
+                // 연결 성공 후 초기 사용자 수 요청
+                stompClient.send("/app/request-user-count", {}, JSON.stringify({}));
+
+                // 기존 채팅 기록 로드
+                loadChatLogs();
+            },
+            function(error) {
+                console.error("WebSocket 연결 실패:", error);
+                // 3초 후 재연결 시도
+                setTimeout(connectWebSocket, 3000);
+            }
+        );
+    }
+
+    // 초기 연결 시도
+    connectWebSocket();
+
+    // 페이지 언로드 시 연결 해제
+    window.addEventListener('beforeunload', function() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
     });
 
     // 기존 채팅 기록 로드
@@ -176,12 +228,18 @@
             alert("로그인 후에 채팅을 입력할 수 있습니다.");
             return;
         }
-        stompClient.send(`/app/sendMessage/${matchId}`, {}, JSON.stringify({
-            matchId: matchId,
-            user: nickname,
-            content: message
-        }));
-        chatInput.value = "";
+
+        try {
+            stompClient.send(`/app/sendMessage/${matchId}`, {}, JSON.stringify({
+                matchId: matchId,
+                user: nickname,
+                content: message
+            }));
+            chatInput.value = "";
+        } catch (error) {
+            console.error("메시지 전송 실패:", error);
+            alert("메시지 전송에 실패했습니다. 다시 시도해주세요.");
+        }
     }
 
     // Enter 키로 메시지 전송

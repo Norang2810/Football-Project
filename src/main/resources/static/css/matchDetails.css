@@ -1,5 +1,7 @@
+html {
+    font-family: 'IBM Plex Sans KR', Arial, sans-serif;
+}
 body {
-    font-family:'IBM Plex Sans KR', Arial, sans-serif;
     margin: 20px;
     background-color: #f9f9f9;
     color: #333;
