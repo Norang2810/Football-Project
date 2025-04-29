@@ -20,7 +20,7 @@
 <p align=center><img src=./src/assets/images/velogClone.gif  width=60% /></p>
 <p align=center> 🏠 <a href="http://3.107.177.97:8080/matches/list">웹 페이지</a></p>
 <p align=center> 🏠 <a href="https://www.figma.com/design/b2DXHp0z1MRs2ynEHhDaPr/Untitled?node-id=0-1&t=6RJAY6g1EFZIBIrV-1">초기 화면정의 (피그마)</a></p>
-<p align=center> 💼 <a href=https://github.com/Norang2810/Memorial-Project/wiki/%ED%99%94%EB%A9%B4-%EA%B5%AC%EC%84%B1-%EB%B0%8F-%EC%A3%BC%EC%9A%94%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85> 화면 구성 및 주요 기능 설명</a></p>
+<p align=center> 💼 <a href=https://github.com/Norang2810/Memorial-Project/wiki/> 화면 구성 및 주요 기능 설명</a></p>
 
 ## 1. 프로젝트 살펴보기 🔎
 ### 🙎‍♂️ 팀 구성 
